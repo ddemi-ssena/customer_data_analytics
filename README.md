@@ -1,1 +1,147 @@
-🛍️ Müşteri Alışveriş Davranışı Analizi (SQL, Python & Power BI)Bu proje, 3900 adet perakende işlem verisini kullanarak müşteri satın alma eğilimlerini, segmentasyonunu ve ürün tercihlerini derinlemesine analiz etmeyi amaçlamaktadır. Analiz sonuçları, iş stratejilerini optimize etmek ve abonelik/sadakat programlarını geliştirmek için görsel bir Power BI Dashboard'u ile sunulmuştur.ℹ️ Not: Bu proje, Amlan Mohanty'nin "Complete Data Analytics Portfolio Project" serisinden esinlenerek ve rehber alınarak tamamlanmıştır.🎯 Proje HedefleriMüşteri Segmentasyonu: Satın alma geçmişine göre müşterileri 'Yeni', 'Geri Dönen' ve 'Sadık' segmentlere ayırmak1.Harcama Eğilimleri: Yaş gruplarına 2ve abonelik durumlarına 3 göre ortalama harcama ve toplam gelir karşılaştırması yapmak.Ürün Performansı: Kategori bazında en çok satan ürünleri 4ve en yüksek indirim oranıyla satılan ilk 5 ürünü 5 tespit etmek.Veri Sunumu: Kritik iş sorularına cevap veren, etkileşimli bir Power BI panosu oluşturmak6.⚙️ Kullanılan TeknolojilerVeritabanı Yönetimi: PostgreSQLVeri İşleme ve Temizleme: Python (Pandas)Analiz: SQL (PostgreSQL)Görselleştirme ve Raporlama: Microsoft Power BI💾 Veri Seti ve Ön İşlemeProjede 3,900 satırlık müşteri işlem verisi kullanılmıştır7. Veri setinde demografik bilgiler (Yaş, Cinsiyet), satın alma detayları (Ürün, Miktar, Kategori) ve davranışsal özellikler (İndirim Kullanımı, Önceki Satın Almalar) bulunmaktadır8.Python ile Yapılan Ön İşlemler:Veri Entegrasyonu: Review Rating sütunundaki eksik 37 veri 9medyan değerlerle doldurulmuştur10.Sütun Standardizasyonu: Okunabilirliği artırmak için sütun adları snake case formatına çevrilmiştir11.Özellik Mühendisliği (Feature Engineering):Müşteri yaşlarından age_group (Yaş Grubu) sütunu oluşturulmuştur12.Veritabanı Entegrasyonu: Temizlenmiş ve yeni özellikler eklenmiş DataFrame, SQL analizleri için yerel PostgreSQL veritabanına yüklenmiştir13.📊 SQL Analizlerinden Önemli ÇıkarımlarPostgreSQL'de 10 farklı iş sorusunu yanıtlamak için gelişmiş SQL sorguları (CTE'ler, Pencere Fonksiyonları, Case ifadeleri) kullanılmıştır:İş SorusuSQL TekniğiÇıkarım (Örnek)Abonelik Etkisi (Q5)AVG(), SUM(), GROUP BYAboneliği olmayan müşterilerin ortalama harcaması ($59.87) aboneliği olanlara ($59.49) göre biraz daha yüksektir14.Sadakat Sınıflandırması (Q7)CASE İfadesiMüşterilerin büyük çoğunluğu (%80'den fazlası) 10'dan fazla satın alma yapmış 'Sadık (Loyal)' segmentinde yer almaktadır15.Kategori Liderleri (Q8)ROW_NUMBER() OVER(PARTITION BY...)Her kategorideki en çok satan 3 ürün sıralı olarak tespit edilmiştir16.İndirim Bağımlılığı (Q6)SUM(CASE WHEN...) / COUNT()Bazı ürünler (Örn: Hat, Sneakers), satışlarının %49-%50'si indirimle yapıldığı için, indirim politikalarının gözden geçirilmesi önerilmiştir17171717.📈 Power BI Etkileşimli DashboardTüm analiz sonuçları, karar vericilerin kolayca kullanabileceği tek bir kontrol paneline dönüştürülmüştür18.Dashboard Temel Bileşenleri:KPI Kartları: Toplam müşteri sayısı (3.9K), Ortalama Satın Alma Miktarı ($59.76) ve Ortalama İnceleme Puanı (3.75) gösterilmiştir191919191919191919.Harcama Dağılımı: En yüksek geliri getiren 'Young Adult' yaş grubunun katkısı açıkça gösterilmiştir20.Dinamik Filtreleme: Kullanıcılar, Cinsiyet ve Kategori bazında filtreleme yaparak tüm grafikleri anlık olarak güncelleyebilirler21212121.🎬 Proje Öğrenimi ve KaynakBu proje, veri analizi iş akışının tamamını uygulamak için harika bir fırsat sundu: Temiz veri setini bir veritabanına yükleme, karmaşık iş sorularını SQL ile yanıtlama ve sonuçları Power BI'da profesyonelce sunma yetkinlikleri pekiştirilmiştir.Esin Kaynağı: Bu projenin yapısal ve metodolojik rehberliği, Amlan Mohanty tarafından sunulan eğitim içeriğinden alınmıştır.Kurulum TalimatlarıVeritabanı Kurulumu: Yerel PostgreSQL sunucusuna customer_behavior adında bir veritabanı oluşturun.Veri Yükleme: customer_shopping_behavior_analysis.ipynb dosyasını çalıştırarak veriyi veritabanına aktarın.Analiz: analysis_queries.sql dosyasındaki sorguları çalıştırın ve sonuçları inceleyin.Görselleştirme: Power BI Desktop'ı açarak PostgreSQL veritabanına bağlanın ve görselleştirmeleri tamamlayın.
+# 🛍️ Customer Shopping Behavior Analysis
+
+**Proje:** Müşteri Alışveriş Davranışı Analizi (SQL, Python & Power BI)
+
+**Kısa Açıklama**
+Bu depo, 3.900 kayıtlı perakende işlem verisi kullanılarak müşteri satın alma eğilimleri, segmentasyonu ve ürün performansını analiz eden tam bir veri analitiği projesini içerir. Analizler PostgreSQL üzerinde gelişmiş SQL sorguları ile hazırlanmış; veri temizleme/işleme Python (Pandas) ile yapılmış ve sonuçlar etkileşimli bir Power BI dashboard'u ile sunulmuştur.
+
+---
+
+## 🎯 Hedefler
+
+* Müşteri segmentasyonu: Yeni, Geri Dönen, Sadık.
+* Harcama eğilimleri: Yaş grupları ve abonelik durumuna göre ort. harcama & toplam gelir.
+* Ürün performansı: Kategori bazında en çok satan ürünler ve en yüksek indirimle satılan ilk 5 ürün.
+* Karar vericiler için etkileşimli Power BI panosu.
+
+---
+
+## ⚙️ Kullanılan Teknolojiler
+
+* **Veritabanı:** PostgreSQL
+* **Veri işleme:** Python (Pandas)
+* **Analiz:** SQL (PostgreSQL, CTE, window functions)
+* **Rapor/Görselleştirme:** Microsoft Power BI
+* **Araçlar / Notlar:** Jupyter Notebook / .ipynb dosyaları repo'da bulunmaktadır.
+
+---
+
+## 📁 Depo Yapısı (Önerilen)
+
+```
+/ (repo root)
+├─ data/                      # (Opsiyonel) ham veya örnek veri dosyaları (küçük örnekler)
+├─ notebooks/
+│  └─ customer_shopping_behavior_analysis.ipynb
+├─ sql/
+│  └─ analysis_queries.sql
+├─ powerbi/
+│  └─ Shopping_Behavior_Report.pbix   # (isteğe bağlı, büyük dosyaysa LFS önerilir)
+├─ scripts/
+│  └─ load_to_postgres.py
+├─ requirements.txt
+├─ .gitignore
+├─ README.md
+└─ LICENSE
+```
+
+> Not: Gerçek (ve büyük) veri dosyalarını GitHub'a koyacaksanız **Git LFS** kullanmanızı veya veri setini paylaşmak istemiyorsanız örnek/örneklenmiş bir CSV koymanızı öneririm.
+
+---
+
+## 🔁 Kurulum & Çalıştırma (Local)
+
+Aşağıdaki adımlar, projenin yerel makinede çalıştırılması içindir.
+
+1. Depoyu klonlayın veya indirin.
+
+```bash
+git clone https://github.com/<kullaniciadi>/<repo>.git
+cd <repo>
+```
+
+2. Sanal ortam oluşturun ve bağımlılıkları yükleyin.
+
+```bash
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+3. PostgreSQL veritabanı oluşturun (örnek):
+
+```sql
+-- psql içinde
+CREATE DATABASE customer_behavior;
+-- veya terminalde: createdb customer_behavior
+```
+
+4. `config` veya `.env` dosyanıza PostgreSQL bağlantı bilgilerini ekleyin (örneğin: `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS`).
+
+5. Veriyi veritabanına yükleyin:
+
+```bash
+python scripts/load_to_postgres.py --config config.yml
+```
+
+*Not:* `load_to_postgres.py` Jupyter dışı otomasyon için örnek bir betiktir. Aynı işlemi notebook içinde interaktif olarak da çalıştırabilirsiniz (`customer_shopping_behavior_analysis.ipynb`).
+
+6. `sql/analysis_queries.sql` dosyasındaki sorguları PostgreSQL üzerinde çalıştırarak sonuçları doğrulayın.
+
+7. Power BI Desktop ile veritabanına bağlanın: `Get Data -> PostgreSQL database` ve bağlantı bilgilerinizi girin. Ardından raporu açın veya kendi görselleştirmelerinizi oluşturun.
+
+---
+
+## 🧩 Önemli Notlar / İpuçları
+
+* **Eksik veriler:** `Review Rating` sütunundaki eksik değerler median ile dolduruldu (notebook içinde gösterilmiştir).
+* **Sütun formatı:** Tüm sütun adları `snake_case` formatına çevrildi.
+* **Feature engineering:** `age_group`, `is_subscriber`, `loyalty_segment` gibi yeni sütunlar üretildi; bunlar analiz sorgularında kullanıldı.
+* **SQL teknikleri:** CTE, window functions, CASE ifadeleri, aggregations, partitioning.
+* **Power BI:** Dashboard'da dinamik filtreleme (cinsiyet, kategori) ve KPI kartları yer alıyor. Büyük `.pbix` dosyalarını repo'ya koyarken dikkatli olun (LFS veya alternatif paylaşım).
+
+---
+
+## 📌 Sık Kullanılan Komutlar & Örnek SQL
+
+* Jupyter notebook açma:
+
+```bash
+jupyter lab
+# veya
+jupyter notebook
+```
+
+* PostgreSQL'e sorgu çalıştırma (psql):
+
+```bash
+psql -h localhost -U <user> -d customer_behavior -f sql/analysis_queries.sql
+```
+
+> `sql/analysis_queries.sql` içindeki sorgular örnek olarak 10 iş sorusunu cevaplar (abonelik etkisi, sadakat sınıflandırması, kategori liderleri, indirim bağımlılığı vb.).
+
+---
+
+## 📷 Power BI Dashboard Notları
+
+* Önerilen görselleştirmeler: KPI kartları, stacked bar (yaş grubu gelir dağılımı), line chart (zamanla satış), matrix (kategori -> ürün sıralaması), slicer (cinsiyet, kategori).
+* Dashboard açıklamaları ve kullanım kılavuzu README içinde veya `powerbi/README.md` içinde kısa not olarak eklenebilir.
+
+---
+
+## Lisans & Atıf
+
+* **Atıf:** Proje yapı ve metodolojisi Amlan Mohanty'nin "Complete Data Analytics Portfolio Project" serisinden esinlenerek hazırlanmıştır.
+* **License:** (Öneri) MIT License — ihtiyaçınıza göre değiştirin. `LICENSE` dosyası ekleyin.
+
+---
+
+## İletişim
+
+Herhangi bir sorun ya da katkı için PR/Issue açabilirsiniz. (İletişim bilgisi veya e-posta adresi ekleyin.)
+
+---
+
+**Hazırlayan:** [Adınız]
+
+*Son güncelleme: YYYY-MM-DD*
